@@ -4,10 +4,11 @@ using WebApiDataverseConnection.Helpers;
 using WebApiDataverseConnection.Models.Contacts;
 using WebApiDataverseConnection.Models.Cases;
 using Newtonsoft.Json;
+using WebApiDataverseConnection.Models.Accounts;
 
 namespace WebApiDataverseConnection.Services
 {
-    public class AccountServices
+    public class AccountServices: IAccountService
     {
         private readonly string clientId;
         private readonly string clientSecret;
@@ -27,11 +28,11 @@ namespace WebApiDataverseConnection.Services
             this.resource = configuration["Resource"];
             this.apiUrl = configuration["ApiUrl"];
         }
-        public async Task<List<GetCasesPerContactModel>> GetAccountCases()
+        public async Task<List<GetCasesPerAccountModel>> GetAccountCases()
         {
+            List<GetCasesPerAccountModel> AccountCaseList = new List<GetCasesPerAccountModel>();
             try
             {
-                List<GetCasesPerContactModel> casePerContactList = new List<GetCasesPerContactModel>();
                 DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
                 String accessToken = await dataverseAuth.GetAccessToken();
 
@@ -44,6 +45,7 @@ namespace WebApiDataverseConnection.Services
 
                     // Get accounts
                     HttpResponseMessage accountResponse = await httpClient.GetAsync(apiUrl + "accounts");
+
                     string accountJson;
                     if (accountResponse.IsSuccessStatusCode)
                     {
@@ -97,7 +99,7 @@ namespace WebApiDataverseConnection.Services
                                             emailaddress1 = emailaddress1,
                                             Cases = caseList
                                         };
-                                        casePerContactList.Add(casePerContact);
+                                        AccountCaseList.Add(casePerContact);
                                     }
                                     else
                                     {
@@ -117,9 +119,9 @@ namespace WebApiDataverseConnection.Services
                             }
 
                         }
-                        Console.WriteLine(casePerContactList.Count);
+                        Console.WriteLine(AccountCaseList.Count);
                         Console.ReadKey();
-                        return casePerContactList;
+                        return AccountCaseList;
                     }
                     else
                     {
@@ -139,8 +141,7 @@ namespace WebApiDataverseConnection.Services
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }
 
-            // Handle the case where an exception occurred
-            return new List<GetCasesPerContactModel>();
+            return AccountCaseList;
         }
     }
 }

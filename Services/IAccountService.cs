@@ -4,6 +4,6 @@ namespace WebApiDataverseConnection.Services
 {
     public interface IAccountService
     {
-        Task<List<GetAccountsModel>> GetAccountCases();
+        Task<List<GetCasesPerAccountModel>> GetAccountCases();
     }
 }
