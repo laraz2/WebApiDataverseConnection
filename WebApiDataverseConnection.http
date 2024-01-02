@@ -1,0 +1,6 @@
+@WebApiDataverseConnection_HostAddress = http://localhost:5123
+
+GET {{WebApiDataverseConnection_HostAddress}}/AccountController/
+Accept: application/json
+
+###
