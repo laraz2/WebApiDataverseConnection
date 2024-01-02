@@ -99,7 +99,7 @@ namespace WebApiDataverseConnection.Services
                                             emailaddress1 = emailaddress1,
                                             Cases = caseList
                                         };
-                                        AccountCaseList.Add(casePerContact);//s
+                                        AccountCaseList.Add(casePerContact);
                                     }
                                     else
                                     {
