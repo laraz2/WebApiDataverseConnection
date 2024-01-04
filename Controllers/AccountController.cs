@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace WebApiDataverseConnection.Controllers
 {
     [ApiController]
-    [Route("[controllers]")]
+    [Route("[controller]")]
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;

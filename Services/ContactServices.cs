@@ -81,7 +81,7 @@ namespace WebApiDataverseConnection.Services
 
             catch (Exception ex)
             {
-                throw new AppException("The error is" + ex.Message.ToString(), ex.GetHashCode());
+                throw new AppException("The error is" + ex.Message.ToString(),ex.GetHashCode);
 
             }
         }
@@ -113,7 +113,7 @@ namespace WebApiDataverseConnection.Services
                         }
                         catch (Exception ex)
                         {
-                            throw new AppException(ex.Message.ToString(), ex.GetHashCode());
+                            throw new AppException(ex.Message.ToString(), ex.GetHashCode);
 
                         }
                     }
@@ -143,7 +143,7 @@ namespace WebApiDataverseConnection.Services
             }
             catch (Exception ex)
             {
-                throw new AppException("The error is " + ex.Message.ToString(), ex.GetHashCode());
+                throw new AppException("The error is " + ex.Message.ToString(), ex.GetHashCode);
             }
         }
     }

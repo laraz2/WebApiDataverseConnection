@@ -5,6 +5,7 @@ using WebApiDataverseConnection.Models.Contacts;
 using WebApiDataverseConnection.Models.Cases;
 using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Accounts;
+using static System.Net.WebRequestMethods;
 
 namespace WebApiDataverseConnection.Services
 {
@@ -30,7 +31,7 @@ namespace WebApiDataverseConnection.Services
         }
         public async Task<List<GetCasesPerAccountModel>> GetAccountCases()
         {
-            List<GetCasesPerAccountModel> AccountCaseList = new List<GetCasesPerAccountModel>();
+           List<GetCasesPerAccountModel> AccountCaseList = new List<GetCasesPerAccountModel>();
             try
             {
                 DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
@@ -38,7 +39,6 @@ namespace WebApiDataverseConnection.Services
 
                 Console.WriteLine($"Access Token: {accessToken}");
                 Console.WriteLine($"\n");
-                Console.ReadKey();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -52,54 +52,56 @@ namespace WebApiDataverseConnection.Services
                          accountJson = await accountResponse.Content.ReadAsStringAsync();
                         // Parse accounts
                         var accounts = JsonConvert.DeserializeObject<dynamic>(accountJson);
-                        
-                        foreach (var account in accounts.value)
+                        foreach (var a in accounts.value)
                         {
-                            string accountId = account["accountid"].ToString();
-                            string accountName = account["name"].ToString();
+                            string accountId = a["accountid"].ToString();
+                            string accountName = a["name"].ToString();
 
                             // Get contacts for each account
                             HttpResponseMessage contactResponse = await httpClient.GetAsync(apiUrl + $"contacts?$filter=_parentcustomerid_value eq {accountId}");
-                            var contactJson = await contactResponse.Content.ReadAsStringAsync();
+                            string contactJson;
+                            contactJson = await contactResponse.Content.ReadAsStringAsync();
+                            
                             if (contactResponse.IsSuccessStatusCode)
                             {
-                               
+                                List<GetCasesPerContactModel> contactList= new List<GetCasesPerContactModel>();
                                 var contacts = JsonConvert.DeserializeObject<dynamic>(contactJson);
-
                                 foreach (var c in contacts.value)
                                 {
+                                    
                                     string contactid = c["contactid"].ToString();
                                     string fullname = c["fullname"].ToString();
                                     string emailaddress1 = c["emailaddress1"].ToString();
-
                                     string caseJson;
-                                    HttpResponseMessage caseResponse = await httpClient.GetAsync(apiUrl + $"incidents12?$filter=_accountid_value eq {accountId}&& _primarycontactid_value eq {contactid}");
+                                    HttpResponseMessage caseResponse = await httpClient.GetAsync(apiUrl + $"incidents?$filter=_accountid_value eq {accountId} and _primarycontactid_value eq {contactid}");
                                     if (caseResponse.IsSuccessStatusCode)
                                     {
                                         caseJson = await caseResponse.Content.ReadAsStringAsync();
                                         var cases = JsonConvert.DeserializeObject<dynamic>(caseJson);
                                         List<GetCasesModel> caseList = new List<GetCasesModel>();
-                                        foreach (var cs in cases.value)
-                                        {
-                                            GetCasesModel casesInfo = new GetCasesModel
+                                            foreach (var cs in cases.value)
                                             {
-                                                incidentid = cs["incidentid"].ToString(),
-                                                title = cs["title"].ToString(),
-                                                ticketnumber = cs["ticketnumber"].ToString(),
-                                                statuscode = cs["statuscode"].ToString(),
-                                                severitycode = cs["_ownerid_value"].ToString()
-                                            };
-                                            caseList.Add(casesInfo);
-                                        }
-                                        // Create CasePerAccount object and add to the list
+                                                GetCasesModel casesInfo = new GetCasesModel
+                                                {
+                                                    incidentid = cs["incidentid"].ToString(),
+                                                    title = cs["title"].ToString(),
+                                                    ticketnumber = cs["ticketnumber"].ToString(),
+                                                    statuscode = cs["statuscode"].ToString(),
+                                                    severitycode = cs["_ownerid_value"].ToString()
+                                                };
+                                                caseList.Add(casesInfo);
+                                            }
+                                        // Create CasePerContact object and add to the list
                                         GetCasesPerContactModel casePerContact = new GetCasesPerContactModel
                                         {
-                                            contactid = contactid,
-                                            fullname = fullname,
-                                            emailaddress1 = emailaddress1,
+                                            contactid = c["contactid"].ToString(),
+                                            fullname = c["fullname"].ToString(),
+                                            emailaddress1 = c["emailaddress1"].ToString(),
                                             Cases = caseList
                                         };
-                                        AccountCaseList.Add(casePerContact);
+
+                                        contactList.Add(casePerContact);
+                                     
                                     }
                                     else
                                     {
@@ -109,6 +111,13 @@ namespace WebApiDataverseConnection.Services
                                         Console.ReadKey();
                                     }
                                 }
+                                GetCasesPerAccountModel accountsl = new GetCasesPerAccountModel
+                                {
+                                    accountid = accountId,
+                                    name = accountName,
+                                    casesPerContact = contactList  
+                                };
+                                AccountCaseList.Add(accountsl);
                             }
                             else
                             {
@@ -117,10 +126,9 @@ namespace WebApiDataverseConnection.Services
                                 Console.WriteLine(contact.error.message);
                                 Console.ReadKey();
                             }
-
+                           
                         }
                         Console.WriteLine(AccountCaseList.Count);
-                        Console.ReadKey();
                         return AccountCaseList;
                     }
                     else
@@ -134,11 +142,12 @@ namespace WebApiDataverseConnection.Services
             }
             catch (HttpRequestException httpEx)
             {
-                Console.WriteLine($"HTTP Request Exception: {httpEx.Message}");
+                throw new AppException(httpEx.Message,httpEx.GetHashCode);
+                
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
+                throw new AppException(ex.Message,ex.GetHashCode);
             }
 
             return AccountCaseList;
