@@ -2,12 +2,14 @@
 using WebApiDataverseConnection.Helpers;
 using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Emails;
+using WebApiDataverseConnection.Models.ActivitiesModel;
 using System.Xml;
 using HtmlAgilityPack;
 using Microsoft.Identity.Client;
+using WebApiDataverseConnection.Models.ActivitiesModel;
 namespace WebApiDataverseConnection.Services
 {
-    public class EmailsServices : IEmailServices
+    public class ActivityServices 
     {
         private readonly string clientId;
         private readonly string clientSecret;
@@ -15,7 +17,7 @@ namespace WebApiDataverseConnection.Services
         private readonly string resource;
         private readonly string apiUrl;
         private readonly IConfiguration configuration;
-        public EmailsServices()
+        public ActivityServices()
         {
             configuration = new ConfigurationBuilder()
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
@@ -27,9 +29,9 @@ namespace WebApiDataverseConnection.Services
             this.resource = configuration["Resource"];
             this.apiUrl = configuration["ApiUrl"];
         }
-        public async Task<List<GetEmailsModel>> GetEmailCases(string incidentid)
+        public async Task<List<GetActivitiesModel>> GetActivitesCases(string incidentid)
         {
-            List<GetEmailsModel> EmailsList = new List<GetEmailsModel>();
+            List<GetActivitiesModel> activityList = new List<GetActivitiesModel>();
             try
             {
                 DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
@@ -41,40 +43,42 @@ namespace WebApiDataverseConnection.Services
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     // Get emails
-                    HttpResponseMessage emailResponse = await httpClient.GetAsync(apiUrl + $"emails?$filter=_regardingobjectid_value eq {incidentid}");
-                    string emailJson;
-                    if (emailResponse.IsSuccessStatusCode)
+                    HttpResponseMessage activityResponse = await httpClient.GetAsync(apiUrl + $"activitypointers?$filter=_regardingobjectid_value eq {incidentid}");
+                    string activityJson;
+                    if (activityResponse.IsSuccessStatusCode)
                     {
-                        emailJson = await emailResponse.Content.ReadAsStringAsync();
+                        activityJson = await activityResponse.Content.ReadAsStringAsync();
                         // Parse emails
-                        var emails = JsonConvert.DeserializeObject<dynamic>(emailJson);
+                        var emails = JsonConvert.DeserializeObject<dynamic>(activityJson);
                         foreach (var e in emails.value)
                         {
                             if (e != null)
                             {
-                                GetEmailsModel email = new GetEmailsModel()
+                                GetActivitiesModel activities = new GetActivitiesModel()
                                 {
-                                    Subject = e["subject"]?.ToString(),
-                                    Regarding = e["regarding"]?.ToString(),
-                                    Priority = e["priority"]?.ToString(),
-                                    ActualEnd = e["actualend"]?.ToString(),
-                                    Description = ConvertHtmlToPlainText(e["description"]?.ToString()),
-                                    Sender = e["systemsender"]?.ToString()
+                                    activityid = e["activityid"]?.ToString(),
+                                    statecode = e["statecode"]?.ToString(),
+                                    description = ConvertHtmlToPlainText(e["description"]?.ToString()),
+                                    subject = e["subject"]?.ToString(),
+                                    activitytypecode = e["activitytypecode"],
+                                    actualend = e["actualend"]?.ToString(),
+                                    _sendermailboxid_value = e["_sendermailboxid_value"]?.ToString(),
+                                    
                                 };
 
-                                EmailsList.Add(email);
+                                activityList.Add(activities);
                             }
                         }
 
                     }
                     else
                     {
-                        emailJson = await emailResponse.Content.ReadAsStringAsync();
-                        var cases = JsonConvert.DeserializeObject<ErrorModel>(emailJson);
+                        activityJson = await activityResponse.Content.ReadAsStringAsync();
+                        var cases = JsonConvert.DeserializeObject<ErrorModel>(activityJson);
                         Console.WriteLine(cases.error.message);
                         Console.ReadKey();
                     }
-                    return EmailsList;
+                    return activityList;
                 }
             }
             catch (HttpRequestException httpEx)
@@ -86,7 +90,7 @@ namespace WebApiDataverseConnection.Services
             {
                 throw new AppException(ex.Message, ex.GetHashCode);
             }
-            return EmailsList;
+            return activityList;
         }
         public string ConvertHtmlToPlainText(string html)
         {

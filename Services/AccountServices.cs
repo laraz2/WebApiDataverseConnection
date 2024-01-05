@@ -5,6 +5,7 @@ using WebApiDataverseConnection.Models.Cases;
 using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Accounts;
 using WebApiDataverseConnection.Models.Emails;
+using WebApiDataverseConnection.Models.ActivitiesModel;
 
 namespace WebApiDataverseConnection.Services
 {
@@ -79,11 +80,12 @@ namespace WebApiDataverseConnection.Services
                                         var cases = JsonConvert.DeserializeObject<dynamic>(caseJson);
 
                                         List<GetEmailsPerCase> emailspercaseList = new List<GetEmailsPerCase>();
-                                        EmailsServices emailsServices = new EmailsServices();
+                                        ActivityServices emailsServices = new ActivityServices ();
 
                                         foreach (var cs in cases.value)
                                         {
-                                            List<GetEmailsModel> emailsModels = await emailsServices.GetEmailCases(cs.incidentid);
+                                            string str = cs.incidentid;
+                                            List<GetActivitiesModel> activitiesModels = await emailsServices.GetActivitesCases(str);
                                             GetEmailsPerCase EmailscaseInfo = new GetEmailsPerCase()
                                             {
                                                 incidentid = cs["incidentid"].ToString(),
