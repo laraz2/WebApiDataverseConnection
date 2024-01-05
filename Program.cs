@@ -29,7 +29,6 @@ namespace WebApiDataverseConnection
             });
 
             services.AddHttpContextAccessor();
-            services.AddScoped<IEmailServices, EmailsServices>();
             services.AddScoped<IAccountService, AccountServices>();
             var app = builder.Build();
 

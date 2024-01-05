@@ -1,17 +1,14 @@
-﻿
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using WebApiDataverseConnection.Helpers;
 using WebApiDataverseConnection.Models.Contacts;
 using WebApiDataverseConnection.Models.Cases;
 using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Accounts;
-using static System.Net.WebRequestMethods;
 using WebApiDataverseConnection.Models.Emails;
-using Microsoft.Graph.Models.Security;
 
 namespace WebApiDataverseConnection.Services
 {
-    public class AccountServices: IAccountService
+    public class AccountServices : IAccountService
     {
         private readonly string clientId;
         private readonly string clientSecret;
@@ -33,7 +30,7 @@ namespace WebApiDataverseConnection.Services
         }
         public async Task<List<GetCasesPerAccountModel>> GetAccountCases()
         {
-           List<GetCasesPerAccountModel> AccountCaseList = new List<GetCasesPerAccountModel>();
+            List<GetCasesPerAccountModel> AccountCaseList = new List<GetCasesPerAccountModel>();
             try
             {
                 DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
@@ -51,7 +48,7 @@ namespace WebApiDataverseConnection.Services
                     string accountJson;
                     if (accountResponse.IsSuccessStatusCode)
                     {
-                         accountJson = await accountResponse.Content.ReadAsStringAsync();
+                        accountJson = await accountResponse.Content.ReadAsStringAsync();
                         // Parse accounts
                         var accounts = JsonConvert.DeserializeObject<dynamic>(accountJson);
                         foreach (var a in accounts.value)
@@ -63,14 +60,14 @@ namespace WebApiDataverseConnection.Services
                             HttpResponseMessage contactResponse = await httpClient.GetAsync(apiUrl + $"contacts?$filter=_parentcustomerid_value eq {accountId}");
                             string contactJson;
                             contactJson = await contactResponse.Content.ReadAsStringAsync();
-                            
+
                             if (contactResponse.IsSuccessStatusCode)
                             {
-                                List<GetCasesPerContactModel> contactList= new List<GetCasesPerContactModel>();
+                                List<GetCasesPerContactModel> contactList = new List<GetCasesPerContactModel>();
                                 var contacts = JsonConvert.DeserializeObject<dynamic>(contactJson);
                                 foreach (var c in contacts.value)
                                 {
-                                    
+
                                     string contactid = c["contactid"].ToString();
                                     string fullname = c["fullname"].ToString();
                                     string emailaddress1 = c["emailaddress1"].ToString();
@@ -83,8 +80,10 @@ namespace WebApiDataverseConnection.Services
 
                                         List<GetEmailsPerCase> emailspercaseList = new List<GetEmailsPerCase>();
                                         EmailsServices emailsServices = new EmailsServices();
-                                            foreach (var cs in cases.value)
-                                            {
+
+                                        foreach (var cs in cases.value)
+                                        {
+                                            List<GetEmailsModel> emailsModels = await emailsServices.GetEmailCases(cs.incidentid);
                                             GetEmailsPerCase EmailscaseInfo = new GetEmailsPerCase()
                                             {
                                                 incidentid = cs["incidentid"].ToString(),
@@ -92,11 +91,11 @@ namespace WebApiDataverseConnection.Services
                                                 ticketnumber = cs["ticketnumber"].ToString(),
                                                 statuscode = cs["statuscode"].ToString(),
                                                 severitycode = cs["_ownerid_value"].ToString(),
-                                                Emails= emailsServices.GetEmailCases("incidentid")
+                                                Emails = emailsModels
                                             };
                                             emailspercaseList.Add(EmailscaseInfo);
-                                                
-                                            }
+
+                                        }
                                         // Create CasePerContact object and add to the list
                                         GetCasesPerContactModel casePerContact = new GetCasesPerContactModel
                                         {
@@ -107,7 +106,7 @@ namespace WebApiDataverseConnection.Services
                                         };
 
                                         contactList.Add(casePerContact);
-                                     
+
                                     }
                                     else
                                     {
@@ -121,7 +120,7 @@ namespace WebApiDataverseConnection.Services
                                 {
                                     accountid = accountId,
                                     name = accountName,
-                                    casesPerContact = contactList  
+                                    casesPerContact = contactList
                                 };
                                 AccountCaseList.Add(accountsl);
                             }
@@ -132,10 +131,10 @@ namespace WebApiDataverseConnection.Services
                                 Console.WriteLine(contact.error.message);
                                 Console.ReadKey();
                             }
-                           
+
                         }
                         Console.WriteLine(AccountCaseList.Count);
-                        
+
                     }
                     else
                     {
@@ -149,12 +148,12 @@ namespace WebApiDataverseConnection.Services
             }
             catch (HttpRequestException httpEx)
             {
-                throw new AppException(httpEx.Message,httpEx.GetHashCode);
-                
+                throw new AppException(httpEx.Message, httpEx.GetHashCode);
+
             }
             catch (Exception ex)
             {
-                throw new AppException(ex.Message,ex.GetHashCode);
+                throw new AppException(ex.Message, ex.GetHashCode);
             }
 
             return AccountCaseList;

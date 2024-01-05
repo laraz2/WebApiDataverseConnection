@@ -16,20 +16,20 @@ namespace WebApiDataverseConnection.Controllers
             _emailServices = emailServices;
         }
 
-        [HttpGet("GetGetEmailCases")]
-        public async Task<IActionResult> GetEmailCases(string incidentid)
-        {
-            try
-            {
-                //Function that gets user by ID
-                var result = await _emailServices.GetEmailCases(incidentid);
+        //[HttpGet("GetGetEmailCases")]
+        //public async Task<IActionResult> GetEmailCases(string incidentid)
+        //{
+        //    try
+        //    {
+        //        //Function that gets user by ID
+        //        var result = await _emailServices.GetEmailCases(incidentid);
 
-                return Ok(result);
-            }
-            catch (AppException e)
-            {
-                return BadRequest(new { message = e.Message, error = e.InnerException });
-            }
-        }
+        //        return Ok(result);
+        //    }
+        //    catch (AppException e)
+        //    {
+        //        return BadRequest(new { message = e.Message, error = e.InnerException });
+        //    }
+        //}
     }
 }

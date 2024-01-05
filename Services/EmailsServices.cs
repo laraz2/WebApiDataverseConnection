@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Emails;
 using System.Xml;
 using HtmlAgilityPack;
+using Microsoft.Identity.Client;
 namespace WebApiDataverseConnection.Services
 {
     public class EmailsServices : IEmailServices
@@ -35,13 +36,12 @@ namespace WebApiDataverseConnection.Services
                 String accessToken = await dataverseAuth.GetAccessToken();
 
                 Console.WriteLine($"Access Token: {accessToken}");
-                Console.WriteLine($"\n");
+                //Console.WriteLine($"\n");
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     // Get emails
-                    HttpResponseMessage emailResponse = await httpClient.GetAsync(apiUrl + "emails");
-
+                    HttpResponseMessage emailResponse = await httpClient.GetAsync(apiUrl + $"emails?$filter=regardingobjectid eq {incidentid}");
                     string emailJson;
                     if (emailResponse.IsSuccessStatusCode)
                     {
@@ -88,18 +88,27 @@ namespace WebApiDataverseConnection.Services
             }
             return EmailsList;
         }
-            public string ConvertHtmlToPlainText(string html)
+        public string ConvertHtmlToPlainText(string html)
+        {
+            try
             {
                 HtmlDocument doc = new HtmlDocument();
                 doc.LoadHtml(html);
 
                 return doc.DocumentNode.InnerText;
             }
-        
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
     }
 }
-         
-    
-    
-        
-            
+
+
+
+
+
+
+

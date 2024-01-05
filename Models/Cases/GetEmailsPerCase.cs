@@ -9,6 +9,6 @@ namespace WebApiDataverseConnection.Models.Cases
         public string ticketnumber { get; set; }
         public string statuscode { get; set; }
         public string severitycode { get; set; }
-        public  List<GetEmailsModel> Emails { get; set; }
+        public  List<GetEmailsModel> Emails { get; set; } = null;
     }
 }
