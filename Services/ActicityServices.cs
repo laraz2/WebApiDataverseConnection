@@ -1,12 +1,9 @@
 ﻿using System.Net.Http.Headers;
 using WebApiDataverseConnection.Helpers;
 using Newtonsoft.Json;
-using WebApiDataverseConnection.Models.Emails;
 using WebApiDataverseConnection.Models.ActivitiesModel;
-using System.Xml;
 using HtmlAgilityPack;
-using Microsoft.Identity.Client;
-using WebApiDataverseConnection.Models.ActivitiesModel;
+
 namespace WebApiDataverseConnection.Services
 {
     public class ActivityServices 
@@ -42,15 +39,15 @@ namespace WebApiDataverseConnection.Services
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    // Get emails
+                    // Get activities
                     HttpResponseMessage activityResponse = await httpClient.GetAsync(apiUrl + $"activitypointers?$filter=_regardingobjectid_value eq {incidentid}");
                     string activityJson;
                     if (activityResponse.IsSuccessStatusCode)
                     {
                         activityJson = await activityResponse.Content.ReadAsStringAsync();
-                        // Parse emails
-                        var emails = JsonConvert.DeserializeObject<dynamic>(activityJson);
-                        foreach (var e in emails.value)
+                        // Parse activities
+                        var activitiesList = JsonConvert.DeserializeObject<dynamic>(activityJson);
+                        foreach (var e in activitiesList.value)
                         {
                             if (e != null)
                             {
@@ -62,7 +59,7 @@ namespace WebApiDataverseConnection.Services
                                     subject = e["subject"]?.ToString(),
                                     activitytypecode = e["activitytypecode"],
                                     actualend = e["actualend"]?.ToString(),
-                                    _sendermailboxid_value = e["_sendermailboxid_value"]?.ToString(),
+                                    _createdby_value = e["_createdby_value"]?.ToString(),
                                     
                                 };
 

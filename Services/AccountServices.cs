@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Accounts;
 using WebApiDataverseConnection.Models.Emails;
 using WebApiDataverseConnection.Models.ActivitiesModel;
+using WebApiDataverseConnection.Models.Activities;
 
 namespace WebApiDataverseConnection.Services
 {
@@ -79,23 +80,23 @@ namespace WebApiDataverseConnection.Services
                                         caseJson = await caseResponse.Content.ReadAsStringAsync();
                                         var cases = JsonConvert.DeserializeObject<dynamic>(caseJson);
 
-                                        List<GetEmailsPerCase> emailspercaseList = new List<GetEmailsPerCase>();
-                                        ActivityServices emailsServices = new ActivityServices ();
+                                        List<GetActivitiesPerCase> activitiesPercaseList = new List<GetActivitiesPerCase>();
+                                        ActivityServices activityServices = new ActivityServices ();
 
                                         foreach (var cs in cases.value)
                                         {
                                             string str = cs.incidentid;
-                                            List<GetActivitiesModel> activitiesModels = await emailsServices.GetActivitesCases(str);
-                                            GetEmailsPerCase EmailscaseInfo = new GetEmailsPerCase()
+                                            List<GetActivitiesModel> activitiesList = await activityServices.GetActivitesCases(str);
+                                            GetActivitiesPerCase activitiesPerCaseModel= new GetActivitiesPerCase()
                                             {
                                                 incidentid = cs["incidentid"].ToString(),
                                                 title = cs["title"].ToString(),
                                                 ticketnumber = cs["ticketnumber"].ToString(),
                                                 statuscode = cs["statuscode"].ToString(),
                                                 severitycode = cs["_ownerid_value"].ToString(),
-                                                Emails = emailsModels
+                                                activities = activitiesList
                                             };
-                                            emailspercaseList.Add(EmailscaseInfo);
+                                            activitiesPercaseList.Add(activitiesPerCaseModel);
 
                                         }
                                         // Create CasePerContact object and add to the list
@@ -104,7 +105,7 @@ namespace WebApiDataverseConnection.Services
                                             contactid = c["contactid"].ToString(),
                                             fullname = c["fullname"].ToString(),
                                             emailaddress1 = c["emailaddress1"].ToString(),
-                                            EmailsPerCase = emailspercaseList
+                                            ActivitiesPerCase = activitiesPercaseList
                                         };
 
                                         contactList.Add(casePerContact);

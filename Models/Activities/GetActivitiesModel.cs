@@ -8,7 +8,7 @@
         public string subject { get; set; }
         public string activitytypecode { get; set; }
         public string actualend { get; set; }
-        public string _sendermailboxid_value { get; set; }
+        public string _createdby_value { get; set; }
 
     }
 }
