@@ -29,7 +29,7 @@ namespace WebApiDataverseConnection.Services
         }
         public async Task<List<GetEmailsModel>> GetEmailCases(string incidentid)
         {
-            List<GetEmailsModel> EmailsList = new List<GetEmailsModel>();
+            List<GetEmailsModel> EmailsList = new ();
             try
             {
                 DataverseAuthentication dataverseAuth = new(clientId, clientSecret, authority, resource);
@@ -52,7 +52,7 @@ namespace WebApiDataverseConnection.Services
                         {
                             if (e != null)
                             {
-                                GetEmailsModel email = new GetEmailsModel()
+                                GetEmailsModel email = new ()
                                 {
                                     Subject = e["subject"]?.ToString(),
                                     Regarding = e["regarding"]?.ToString(),

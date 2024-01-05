@@ -14,7 +14,8 @@ namespace WebApiDataverseConnection.Services
         private readonly string authority = "";
         private readonly string resource = "";
         private readonly string apiUrl = "";
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration? configuration = null;
+
         public AccountServices()
         {
             configuration = new ConfigurationBuilder()
@@ -32,12 +33,12 @@ namespace WebApiDataverseConnection.Services
             List<GetCasesPerAccountModel> AccountCaseList = new ();
             try
             {
-                DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
+                DataverseAuthentication dataverseAuth = new (clientId, clientSecret, authority, resource);
                 String accessToken = await dataverseAuth.GetAccessToken();
 
                 Console.WriteLine($"Access Token: {accessToken}");
                 Console.WriteLine($"\n");
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new ())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
@@ -62,7 +63,7 @@ namespace WebApiDataverseConnection.Services
 
                             if (contactResponse.IsSuccessStatusCode)
                             {
-                                List<GetCasesPerContactModel> contactList = new List<GetCasesPerContactModel>();
+                                List<GetCasesPerContactModel> contactList = new ();
                                 var contacts = JsonConvert.DeserializeObject<dynamic>(contactJson);
                                 foreach (var c in contacts.value)
                                 {
@@ -77,14 +78,14 @@ namespace WebApiDataverseConnection.Services
                                         caseJson = await caseResponse.Content.ReadAsStringAsync();
                                         var cases = JsonConvert.DeserializeObject<dynamic>(caseJson);
 
-                                        List<GetActivitiesPerCase> activitiesPercaseList = new List<GetActivitiesPerCase>();
-                                        ActivityServices activityServices = new ActivityServices ();
+                                        List<GetActivitiesPerCase> activitiesPercaseList = new ();
+                                        ActivityServices activityServices = new ();
 
                                         foreach (var cs in cases.value)
                                         {
                                             string str = cs.incidentid;
                                             List<GetActivitiesModel> activitiesList = await activityServices.GetActivitesCases(str);
-                                            GetActivitiesPerCase activitiesPerCaseModel= new GetActivitiesPerCase()
+                                            GetActivitiesPerCase activitiesPerCaseModel= new ()
                                             {
                                                 incidentid = cs["incidentid"].ToString(),
                                                 title = cs["title"].ToString(),
@@ -97,7 +98,7 @@ namespace WebApiDataverseConnection.Services
 
                                         }
                                         // Create CasePerContact object and add to the list
-                                        GetCasesPerContactModel casePerContact = new GetCasesPerContactModel
+                                        GetCasesPerContactModel casePerContact = new()
                                         {
                                             contactid = c["contactid"].ToString(),
                                             fullname = c["fullname"].ToString(),
@@ -116,7 +117,7 @@ namespace WebApiDataverseConnection.Services
                                         Console.ReadKey();
                                     }
                                 }
-                                GetCasesPerAccountModel accountsl = new GetCasesPerAccountModel
+                                GetCasesPerAccountModel accountsl = new ()
                                 {
                                     accountid = accountId,
                                     name = accountName,

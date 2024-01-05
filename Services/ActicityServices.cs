@@ -28,15 +28,15 @@ namespace WebApiDataverseConnection.Services
         }
         public async Task<List<GetActivitiesModel>> GetActivitesCases(string incidentid)
         {
-            List<GetActivitiesModel> activityList = new List<GetActivitiesModel>();
+            List<GetActivitiesModel> activityList = new ();
             try
             {
-                DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
+                DataverseAuthentication dataverseAuth = new (clientId, clientSecret, authority, resource);
                 String accessToken = await dataverseAuth.GetAccessToken();
 
                 Console.WriteLine($"Access Token: {accessToken}");
                 Console.WriteLine($"\n");
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new ())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     // Get activities
@@ -59,7 +59,7 @@ namespace WebApiDataverseConnection.Services
                                     // Parse USERS
                                     var usersList = JsonConvert.DeserializeObject<dynamic>(userJson);
                                     string username = usersList["value"][0].domainname;
-                                    GetActivitiesModel activities = new GetActivitiesModel()
+                                    GetActivitiesModel activities = new ()
                                     {
                                         activityid = e["activityid"]?.ToString(),
                                         statecode = e["statecode"]?.ToString(),
@@ -109,7 +109,7 @@ namespace WebApiDataverseConnection.Services
             {
                 try
                 {
-                    HtmlDocument doc = new HtmlDocument();
+                    HtmlDocument doc = new ();
                     doc.LoadHtml(html);
 
                     return doc.DocumentNode.InnerText;
