@@ -29,7 +29,7 @@ namespace WebApiDataverseConnection
             });
 
             services.AddHttpContextAccessor();
-            services.AddScoped<IAccountService, AccountServices>();
+            services.AddScoped<IEmailServices, EmailsServices>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
