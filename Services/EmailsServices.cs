@@ -32,12 +32,12 @@ namespace WebApiDataverseConnection.Services
             List<GetEmailsModel> EmailsList = new List<GetEmailsModel>();
             try
             {
-                DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
+                DataverseAuthentication dataverseAuth = new(clientId, clientSecret, authority, resource);
                 String accessToken = await dataverseAuth.GetAccessToken();
 
                 Console.WriteLine($"Access Token: {accessToken}");
                 Console.WriteLine($"\n");
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new ())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     // Get emails
@@ -93,7 +93,7 @@ namespace WebApiDataverseConnection.Services
             {
                 try
                 {
-                    HtmlDocument doc = new HtmlDocument();
+                    HtmlDocument doc = new();
                     doc.LoadHtml(html);
 
                     return doc.DocumentNode.InnerText;

@@ -31,17 +31,17 @@ namespace WebApiDataverseConnection.Services
         {
             try
             {
-                DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
+                DataverseAuthentication dataverseAuth = new (clientId, clientSecret, authority, resource);
                 String accessToken = await dataverseAuth.GetAccessToken();
 
                 Console.WriteLine($"Access Token: {accessToken}");
                 Console.ReadKey();
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
                     // Example: Retrieve records from a Dataverse entity
-                    AddContactsModel model = new AddContactsModel
+                    AddContactsModel model = new ()
                     {
                         firstname = "Bob",
                         lastname = "Bob",
@@ -90,12 +90,12 @@ namespace WebApiDataverseConnection.Services
         {
             try
             {
-                DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
+                DataverseAuthentication dataverseAuth = new (clientId, clientSecret, authority, resource);
                 String accessToken = await dataverseAuth.GetAccessToken();
 
                 Console.WriteLine($"Access Token: {accessToken}");
                 Console.WriteLine($"\n");
-                using (HttpClient httpClient = new HttpClient())
+                using (HttpClient httpClient = new())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 

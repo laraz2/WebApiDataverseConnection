@@ -29,7 +29,7 @@ namespace WebApiDataverseConnection.Services
         }
         public async Task<List<GetCasesPerAccountModel>> GetAccountCases()
         {
-            List<GetCasesPerAccountModel> AccountCaseList = new List<GetCasesPerAccountModel>();
+            List<GetCasesPerAccountModel> AccountCaseList = new ();
             try
             {
                 DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
