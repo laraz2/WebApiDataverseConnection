@@ -1,4 +1,4 @@
-﻿namespace WebApiDataverseConnection.Models.ActivitiesModel
+﻿namespace WebApiDataverseConnection.Models.Activities
 {
     public class GetActivitiesModel
     {
@@ -9,6 +9,7 @@
         public string activitytypecode { get; set; }
         public string actualend { get; set; }
         public string _createdby_value { get; set; }
+        public string username { get; set; }
 
     }
 }

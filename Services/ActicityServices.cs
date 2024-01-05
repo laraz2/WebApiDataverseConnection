@@ -1,12 +1,12 @@
 ﻿using System.Net.Http.Headers;
 using WebApiDataverseConnection.Helpers;
 using Newtonsoft.Json;
-using WebApiDataverseConnection.Models.ActivitiesModel;
+using WebApiDataverseConnection.Models.Activities;
 using HtmlAgilityPack;
 
 namespace WebApiDataverseConnection.Services
 {
-    public class ActivityServices 
+    public class ActivityServices
     {
         private readonly string clientId;
         private readonly string clientSecret;
@@ -51,22 +51,37 @@ namespace WebApiDataverseConnection.Services
                         {
                             if (e != null)
                             {
-                                GetActivitiesModel activities = new GetActivitiesModel()
+                                HttpResponseMessage userNameResponse = await httpClient.GetAsync(apiUrl + $"systemusers?$filter=systemuserid eq {e._createdby_value}");
+                                string userJson;
+                                if (userNameResponse.IsSuccessStatusCode)
                                 {
-                                    activityid = e["activityid"]?.ToString(),
-                                    statecode = e["statecode"]?.ToString(),
-                                    description = ConvertHtmlToPlainText(e["description"]?.ToString()),
-                                    subject = e["subject"]?.ToString(),
-                                    activitytypecode = e["activitytypecode"],
-                                    actualend = e["actualend"]?.ToString(),
-                                    _createdby_value = e["_createdby_value"]?.ToString(),
-                                    
-                                };
+                                    userJson = await userNameResponse.Content.ReadAsStringAsync();
+                                    // Parse USERS
+                                    var usersList = JsonConvert.DeserializeObject<dynamic>(userJson);
+                                    string username = usersList["value"][0].domainname;
+                                    GetActivitiesModel activities = new GetActivitiesModel()
+                                    {
+                                        activityid = e["activityid"]?.ToString(),
+                                        statecode = e["statecode"]?.ToString(),
+                                        description = ConvertHtmlToPlainText(e["description"]?.ToString()),
+                                        subject = e["subject"]?.ToString(),
+                                        activitytypecode = e["activitytypecode"],
+                                        actualend = e["actualend"]?.ToString(),
+                                        username=username,
+                                    };
 
-                                activityList.Add(activities);
+                                    activityList.Add(activities);
+                                }
+                                else
+                                {
+                                    userJson = await userNameResponse.Content.ReadAsStringAsync();
+                                    var user = JsonConvert.DeserializeObject<ErrorModel>(userJson);
+                                    Console.WriteLine(user.error.message);
+                                    Console.ReadKey();
+                                }
                             }
-                        }
 
+                        }
                     }
                     else
                     {
@@ -75,9 +90,9 @@ namespace WebApiDataverseConnection.Services
                         Console.WriteLine(cases.error.message);
                         Console.ReadKey();
                     }
-                    return activityList;
+                        return activityList;
+                    }
                 }
-            }
             catch (HttpRequestException httpEx)
             {
                 throw new AppException(httpEx.Message, httpEx.GetHashCode);

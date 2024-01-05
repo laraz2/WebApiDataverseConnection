@@ -1,11 +1,8 @@
 ﻿using System.Net.Http.Headers;
 using WebApiDataverseConnection.Helpers;
 using WebApiDataverseConnection.Models.Contacts;
-using WebApiDataverseConnection.Models.Cases;
 using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Accounts;
-using WebApiDataverseConnection.Models.Emails;
-using WebApiDataverseConnection.Models.ActivitiesModel;
 using WebApiDataverseConnection.Models.Activities;
 
 namespace WebApiDataverseConnection.Services

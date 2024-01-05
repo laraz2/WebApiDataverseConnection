@@ -1,4 +1,4 @@
-﻿using WebApiDataverseConnection.Models.ActivitiesModel;
+﻿using WebApiDataverseConnection.Models.Activities;
 
 namespace WebApiDataverseConnection.Models.Activities
 {
