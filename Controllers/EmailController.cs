@@ -17,12 +17,12 @@ namespace WebApiDataverseConnection.Controllers
         }
 
         [HttpGet("GetGetEmailCases")]
-        public async Task<IActionResult> GetEmailCases()
+        public async Task<IActionResult> GetEmailCases(string incidentid)
         {
             try
             {
                 //Function that gets user by ID
-                var result = await _emailServices.GetEmailCases();
+                var result = await _emailServices.GetEmailCases(incidentid);
 
                 return Ok(result);
             }

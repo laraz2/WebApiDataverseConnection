@@ -5,7 +5,7 @@ namespace WebApiDataverseConnection.Services
 {
     public interface IEmailServices
     {
-        Task<List<GetEmailsModel>> GetEmailCases();
+        Task<List<GetEmailsModel>> GetEmailCases(string incidentid);
 
     }
 }

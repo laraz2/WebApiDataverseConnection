@@ -8,6 +8,6 @@ namespace WebApiDataverseConnection.Models.Contacts
         public string contactid { get; set; }
         public string fullname { get; set; }
         public string emailaddress1 { get; set; }
-        public List<GetCasesModel> Cases { get; set; }
+        public List<GetEmailsPerCase> EmailsPerCase { get; set; }
     }
 }

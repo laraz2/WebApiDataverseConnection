@@ -6,6 +6,8 @@ using WebApiDataverseConnection.Models.Cases;
 using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Accounts;
 using static System.Net.WebRequestMethods;
+using WebApiDataverseConnection.Models.Emails;
+using Microsoft.Graph.Models.Security;
 
 namespace WebApiDataverseConnection.Services
 {
@@ -78,18 +80,22 @@ namespace WebApiDataverseConnection.Services
                                     {
                                         caseJson = await caseResponse.Content.ReadAsStringAsync();
                                         var cases = JsonConvert.DeserializeObject<dynamic>(caseJson);
-                                        List<GetCasesModel> caseList = new List<GetCasesModel>();
+
+                                        List<GetEmailsPerCase> emailspercaseList = new List<GetEmailsPerCase>();
+                                        EmailsServices emailsServices = new EmailsServices();
                                             foreach (var cs in cases.value)
                                             {
-                                                GetCasesModel casesInfo = new GetCasesModel
-                                                {
-                                                    incidentid = cs["incidentid"].ToString(),
-                                                    title = cs["title"].ToString(),
-                                                    ticketnumber = cs["ticketnumber"].ToString(),
-                                                    statuscode = cs["statuscode"].ToString(),
-                                                    severitycode = cs["_ownerid_value"].ToString()
-                                                };
-                                                caseList.Add(casesInfo);
+                                            GetEmailsPerCase EmailscaseInfo = new GetEmailsPerCase()
+                                            {
+                                                incidentid = cs["incidentid"].ToString(),
+                                                title = cs["title"].ToString(),
+                                                ticketnumber = cs["ticketnumber"].ToString(),
+                                                statuscode = cs["statuscode"].ToString(),
+                                                severitycode = cs["_ownerid_value"].ToString(),
+                                                Emails= emailsServices.GetEmailCases("incidentid")
+                                            };
+                                            emailspercaseList.Add(EmailscaseInfo);
+                                                
                                             }
                                         // Create CasePerContact object and add to the list
                                         GetCasesPerContactModel casePerContact = new GetCasesPerContactModel
@@ -97,7 +103,7 @@ namespace WebApiDataverseConnection.Services
                                             contactid = c["contactid"].ToString(),
                                             fullname = c["fullname"].ToString(),
                                             emailaddress1 = c["emailaddress1"].ToString(),
-                                            Cases = caseList
+                                            EmailsPerCase = emailspercaseList
                                         };
 
                                         contactList.Add(casePerContact);

@@ -2,6 +2,8 @@
 using WebApiDataverseConnection.Helpers;
 using Newtonsoft.Json;
 using WebApiDataverseConnection.Models.Emails;
+using System.Xml;
+using HtmlAgilityPack;
 namespace WebApiDataverseConnection.Services
 {
     public class EmailsServices : IEmailServices
@@ -24,7 +26,7 @@ namespace WebApiDataverseConnection.Services
             this.resource = configuration["Resource"];
             this.apiUrl = configuration["ApiUrl"];
         }
-        public async Task<List<GetEmailsModel>> GetEmailCases()
+        public async Task<List<GetEmailsModel>> GetEmailCases(string incidentid)
         {
             List<GetEmailsModel> EmailsList = new List<GetEmailsModel>();
             try
@@ -34,11 +36,9 @@ namespace WebApiDataverseConnection.Services
 
                 Console.WriteLine($"Access Token: {accessToken}");
                 Console.WriteLine($"\n");
-                Console.ReadKey();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
                     // Get emails
                     HttpResponseMessage emailResponse = await httpClient.GetAsync(apiUrl + "emails");
 
@@ -50,18 +50,22 @@ namespace WebApiDataverseConnection.Services
                         var emails = JsonConvert.DeserializeObject<dynamic>(emailJson);
                         foreach (var e in emails.value)
                         {
-                            GetEmailsModel email = new GetEmailsModel()
+                            if (e != null)
                             {
-                                Subject = e["subject"].ToString(),
-                                Regarding = e["regarding"].ToString(),
-                                Priority = e["priority"].ToString(),
-                                ActualEnd = e["actualend"].ToString(),
-                                Description = e["description"].ToString(),
-                                Sender = e["systemsender"].ToString()
-                            };
+                                GetEmailsModel email = new GetEmailsModel()
+                                {
+                                    Subject = e["subject"]?.ToString(),
+                                    Regarding = e["regarding"]?.ToString(),
+                                    Priority = e["priority"]?.ToString(),
+                                    ActualEnd = e["actualend"]?.ToString(),
+                                    Description = ConvertHtmlToPlainText(e["description"]?.ToString()),
+                                    Sender = e["systemsender"]?.ToString()
+                                };
 
-                            EmailsList.Add(email);
+                                EmailsList.Add(email);
+                            }
                         }
+
                     }
                     else
                     {
@@ -84,6 +88,14 @@ namespace WebApiDataverseConnection.Services
             }
             return EmailsList;
         }
+            public string ConvertHtmlToPlainText(string html)
+            {
+                HtmlDocument doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                return doc.DocumentNode.InnerText;
+            }
+        
     }
 }
          
