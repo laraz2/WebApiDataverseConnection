@@ -9,11 +9,11 @@ namespace WebApiDataverseConnection.Services
 {
     public class ContactServices
     {
-        private readonly string clientId;
-        private readonly string clientSecret;
-        private readonly string authority;
-        private readonly string resource;
-        private readonly string apiUrl;
+        private readonly string clientId = "";
+        private readonly string clientSecret="";
+        private readonly string authority = "";
+        private readonly string resource = "";
+        private readonly string apiUrl = "";
         private readonly IConfiguration configuration;
         public ContactServices()
         {

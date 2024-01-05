@@ -14,9 +14,12 @@ namespace WebApiDataverseConnection.Helpers
 
         public AppException(string? message, Func<int> getHashCode) : base(message)
         {
-            this.message=message;
-            this.getHashCode = getHashCode;
-            Console.WriteLine(message, getHashCode);
+            if (message != null)
+            {
+                this.message = message;
+                this.getHashCode = getHashCode;
+                Console.WriteLine(message, getHashCode);
+            }
             //    Console.ReadKey();
         }
     }

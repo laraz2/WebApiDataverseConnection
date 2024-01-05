@@ -9,11 +9,11 @@ namespace WebApiDataverseConnection.Services
 {
     public class EmailsServices : IEmailServices
     {
-        private readonly string clientId;
-        private readonly string clientSecret;
-        private readonly string authority;
-        private readonly string resource;
-        private readonly string apiUrl;
+        private readonly string clientId = "";
+        private readonly string clientSecret = "";
+        private readonly string authority = "";
+        private readonly string resource = "";
+        private readonly string apiUrl = "";
         private readonly IConfiguration configuration;
         public EmailsServices()
         {
@@ -57,7 +57,6 @@ namespace WebApiDataverseConnection.Services
                                     Subject = e["subject"]?.ToString(),
                                     Regarding = e["regarding"]?.ToString(),
                                     Priority = e["priority"]?.ToString(),
-                                    ActualEnd = e["actualend"]?.ToString(),
                                     Description = ConvertHtmlToPlainText(e["description"]?.ToString()),
                                     Sender = e["systemsender"]?.ToString()
                                 };
@@ -72,7 +71,7 @@ namespace WebApiDataverseConnection.Services
                         emailJson = await emailResponse.Content.ReadAsStringAsync();
                         var cases = JsonConvert.DeserializeObject<ErrorModel>(emailJson);
                         Console.WriteLine(cases.error.message);
-                        Console.ReadKey();
+                       
                     }
                     return EmailsList;
                 }
@@ -86,22 +85,26 @@ namespace WebApiDataverseConnection.Services
             {
                 throw new AppException(ex.Message, ex.GetHashCode);
             }
-            return EmailsList;
+            
         }
         public string ConvertHtmlToPlainText(string html)
         {
-            try
+            if (html != null)
             {
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(html);
+                try
+                {
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(html);
 
-                return doc.DocumentNode.InnerText;
+                    return doc.DocumentNode.InnerText;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return "";
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
+            return "";
         }
     }
 }

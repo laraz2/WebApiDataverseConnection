@@ -5,8 +5,8 @@ namespace WebApiDataverseConnection.Helpers
 {
     public class ErrorModel
     {
-      
-        public ErrorObject error {  get; set; }
+
+        public ErrorObject error { get; set; }
 
      
     }

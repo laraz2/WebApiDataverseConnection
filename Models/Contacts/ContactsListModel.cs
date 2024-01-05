@@ -5,8 +5,8 @@ namespace WebApiDataverseConnection.Models.Contacts
     {
         public class M365Customers
         {
-            public string ODataContext { get; set; }
-            public List<GetContactsModel> Value { get; set; }
+            public string ODataContext { get; set; } = "";
+            public List<GetContactsModel> Value { get; set; } = [];
         }
 
     }

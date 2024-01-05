@@ -8,11 +8,11 @@ namespace WebApiDataverseConnection.Services
 {
     public class ActivityServices
     {
-        private readonly string clientId;
-        private readonly string clientSecret;
-        private readonly string authority;
-        private readonly string resource;
-        private readonly string apiUrl;
+        private readonly string clientId = "";
+        private readonly string clientSecret = "";
+        private readonly string authority = "";
+        private readonly string resource = "";
+        private readonly string apiUrl = "";
         private readonly IConfiguration configuration;
         public ActivityServices()
         {
@@ -67,7 +67,7 @@ namespace WebApiDataverseConnection.Services
                                         subject = e["subject"]?.ToString(),
                                         activitytypecode = e["activitytypecode"],
                                         actualend = e["actualend"]?.ToString(),
-                                        username=username,
+                                        username = username,
                                     };
 
                                     activityList.Add(activities);
@@ -90,9 +90,9 @@ namespace WebApiDataverseConnection.Services
                         Console.WriteLine(cases.error.message);
                         Console.ReadKey();
                     }
-                        return activityList;
-                    }
+                    return activityList;
                 }
+            }
             catch (HttpRequestException httpEx)
             {
                 throw new AppException(httpEx.Message, httpEx.GetHashCode);
@@ -102,22 +102,26 @@ namespace WebApiDataverseConnection.Services
             {
                 throw new AppException(ex.Message, ex.GetHashCode);
             }
-            return activityList;
         }
         public string ConvertHtmlToPlainText(string html)
         {
-            try
+            if (html != null)
             {
-                HtmlDocument doc = new HtmlDocument();
-                doc.LoadHtml(html);
+                try
+                {
+                    HtmlDocument doc = new HtmlDocument();
+                    doc.LoadHtml(html);
 
-                return doc.DocumentNode.InnerText;
+                    return doc.DocumentNode.InnerText;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    return "";
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return null;
-            }
+            return "";
+
         }
     }
 }
