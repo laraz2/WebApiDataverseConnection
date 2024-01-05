@@ -39,6 +39,7 @@ namespace WebApiDataverseConnection.Services
 
                 Console.WriteLine($"Access Token: {accessToken}");
                 Console.WriteLine($"\n");
+                Console.ReadKey();
                 using (HttpClient httpClient = new HttpClient())
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -51,8 +52,8 @@ namespace WebApiDataverseConnection.Services
                     {
                         emailJson = await emailResponse.Content.ReadAsStringAsync();
                         // Parse accounts
-                        var accounts = JsonConvert.DeserializeObject<dynamic>(emailJson);
-                      
+                        var emails = JsonConvert.DeserializeObject<dynamic>(emailJson);
+                        Console.WriteLine(emails.ToString());
                     }
                   
                 }
