@@ -1,8 +1,7 @@
 ﻿using WebApiDataverseConnection.Services;
 using WebApiDataverseConnection.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+
 
 namespace WebApiDataverseConnection.Controllers
 {
@@ -17,19 +16,19 @@ namespace WebApiDataverseConnection.Controllers
             _emailServices = emailServices;
         }
 
-        [HttpGet("GetEmailCases")]
-        public  async void GetEmailCases()
+        [HttpGet("GetGetEmailCases")]
+        public async Task<IActionResult> GetEmailCases()
         {
             try
             {
                 //Function that gets user by ID
-              _emailServices.GetEmailCases();
+                var result = await _emailServices.GetEmailCases();
 
-                
+                return Ok(result);
             }
             catch (AppException e)
             {
-               //BadRequest(new { message = e.Message, error = e.InnerException });
+                return BadRequest(new { message = e.Message, error = e.InnerException });
             }
         }
     }

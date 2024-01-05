@@ -129,7 +129,7 @@ namespace WebApiDataverseConnection.Services
                            
                         }
                         Console.WriteLine(AccountCaseList.Count);
-                        return AccountCaseList;
+                        
                     }
                     else
                     {
@@ -138,6 +138,7 @@ namespace WebApiDataverseConnection.Services
                         Console.WriteLine(accounts.error.message);
                         Console.ReadKey();
                     }
+                    return AccountCaseList;
                 }
             }
             catch (HttpRequestException httpEx)

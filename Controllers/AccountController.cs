@@ -1,8 +1,6 @@
 ﻿using WebApiDataverseConnection.Services;
 using WebApiDataverseConnection.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace WebApiDataverseConnection.Controllers
 {

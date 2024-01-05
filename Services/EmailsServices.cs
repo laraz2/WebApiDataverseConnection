@@ -1,15 +1,10 @@
 ﻿using System.Net.Http.Headers;
 using WebApiDataverseConnection.Helpers;
-using WebApiDataverseConnection.Models.Contacts;
-using WebApiDataverseConnection.Models.Cases;
 using Newtonsoft.Json;
-using WebApiDataverseConnection.Models.Accounts;
-using static System.Net.WebRequestMethods;
 using WebApiDataverseConnection.Models.Emails;
-
 namespace WebApiDataverseConnection.Services
 {
-    public class EmailsServices: IEmailServices
+    public class EmailsServices : IEmailServices
     {
         private readonly string clientId;
         private readonly string clientSecret;
@@ -29,9 +24,9 @@ namespace WebApiDataverseConnection.Services
             this.resource = configuration["Resource"];
             this.apiUrl = configuration["ApiUrl"];
         }
-        public async void GetEmailCases()
+        public async Task<List<GetEmailsModel>> GetEmailCases()
         {
-           // List<GetEmailsPerCaseModel> EmailsList = new List<GetEmailsPerCaseModel>();
+            List<GetEmailsModel> EmailsList = new List<GetEmailsModel>();
             try
             {
                 DataverseAuthentication dataverseAuth = new DataverseAuthentication(clientId, clientSecret, authority, resource);
@@ -44,40 +39,55 @@ namespace WebApiDataverseConnection.Services
                 {
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-                    // Get accounts
-                    HttpResponseMessage emailResponse = await httpClient.GetAsync(apiUrl + "email");
+                    // Get emails
+                    HttpResponseMessage emailResponse = await httpClient.GetAsync(apiUrl + "emails");
 
                     string emailJson;
                     if (emailResponse.IsSuccessStatusCode)
                     {
                         emailJson = await emailResponse.Content.ReadAsStringAsync();
-                        // Parse accounts
+                        // Parse emails
                         var emails = JsonConvert.DeserializeObject<dynamic>(emailJson);
-                        Console.WriteLine(emails.ToString());
+                        foreach (var e in emails.value)
+                        {
+                            GetEmailsModel email = new GetEmailsModel()
+                            {
+                                Subject = e["subject"].ToString(),
+                                Regarding = e["regarding"].ToString(),
+                                Priority = e["priority"].ToString(),
+                                ActualEnd = e["actualend"].ToString(),
+                                Description = e["description"].ToString(),
+                                Sender = e["systemsender"].ToString()
+                            };
+
+                            EmailsList.Add(email);
+                        }
                     }
-                  
+                    else
+                    {
+                        emailJson = await emailResponse.Content.ReadAsStringAsync();
+                        var cases = JsonConvert.DeserializeObject<ErrorModel>(emailJson);
+                        Console.WriteLine(cases.error.message);
+                        Console.ReadKey();
+                    }
+                    return EmailsList;
                 }
-        
-            }catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message );
             }
+            catch (HttpRequestException httpEx)
+            {
+                throw new AppException(httpEx.Message, httpEx.GetHashCode);
+
+            }
+            catch (Exception ex)
+            {
+                throw new AppException(ex.Message, ex.GetHashCode);
+            }
+            return EmailsList;
         }
     }
 }
-                            ////foreach (var a in accounts.value)
-                            ////{
-                            ////    string accountId = a["accountid"].ToString();
-                            ////    string accountName = a["name"].ToString();
-
-////    // Get contacts for each account
-////    HttpResponseMessage contactResponse = await httpClient.GetAsync(apiUrl + $"email");
-//    string contactJson;
-//    contactJson = await contactResponse.Content.ReadAsStringAsync();
-
-//    if (contactResponse.IsSuccessStatusCode)
-//    {
-//        List<GetCasesPerContactModel> contactList = new List<GetCasesPerContactModel>();
-//        var contacts = JsonConvert.DeserializeObject<dynamic>(contactJson);
-
-
+         
+    
+    
+        
+            
