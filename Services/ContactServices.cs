@@ -21,11 +21,11 @@ namespace WebApiDataverseConnection.Services
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appSettings.json")
                 .Build();
-            this.clientId = configuration["ClientId"];
-            this.clientSecret = configuration["ClientSecret"];
-            this.authority = configuration["Authority"];
-            this.resource = configuration["Resource"];
-            this.apiUrl = configuration["ApiUrl"];
+            this.clientId = configuration["ClientId"]!;
+            this.clientSecret = configuration["ClientSecret"]!;
+            this.authority = configuration["Authority"]!;
+            this.resource = configuration["Resource"]!;
+            this.apiUrl = configuration["ApiUrl"]!;
         }
         public async Task PostContacts()
         {

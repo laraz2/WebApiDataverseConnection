@@ -21,11 +21,11 @@ namespace WebApiDataverseConnection.Services
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appSettings.json")
                 .Build();
-            this.clientId = configuration["ClientId"];
-            this.clientSecret = configuration["ClientSecret"];
-            this.authority = configuration["Authority"];
-            this.resource = configuration["Resource"];
-            this.apiUrl = configuration["ApiUrl"];
+            this.clientId = configuration["ClientId"]!;
+            this.clientSecret = configuration["ClientSecret"]!;
+            this.authority = configuration["Authority"]!;
+            this.resource = configuration["Resource"]!;
+            this.apiUrl = configuration["ApiUrl"]!;
         }
         public async Task<List<GetEmailsModel>> GetEmailCases(string incidentid)
         {
@@ -54,11 +54,11 @@ namespace WebApiDataverseConnection.Services
                             {
                                 GetEmailsModel email = new ()
                                 {
-                                    Subject = e["subject"]?.ToString(),
-                                    Regarding = e["regarding"]?.ToString(),
-                                    Priority = e["priority"]?.ToString(),
-                                    Description = ConvertHtmlToPlainText(e["description"]?.ToString()),
-                                    Sender = e["systemsender"]?.ToString()
+                                    Subject = e["subject"]?.ToString()!,
+                                    Regarding = e["regarding"]?.ToString()!,
+                                    Priority = e["priority"]?.ToString()!,
+                                    Description = ConvertHtmlToPlainText(e["description"]?.ToString())!,
+                                    Sender = e["systemsender"]?.ToString()!
                                 };
 
                                 EmailsList.Add(email);

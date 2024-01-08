@@ -14,7 +14,7 @@ namespace WebApiDataverseConnection.Services
         private readonly string authority = "";
         private readonly string resource = "";
         private readonly string apiUrl = "";
-        private readonly IConfiguration? configuration = null;
+        private readonly IConfiguration  configuration ;
 
         public AccountServices()
         {
@@ -22,11 +22,11 @@ namespace WebApiDataverseConnection.Services
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appSettings.json")
                 .Build();
-            this.clientId = configuration["ClientId"];
-            this.clientSecret = configuration["ClientSecret"];
-            this.authority = configuration["Authority"];
-            this.resource = configuration["Resource"];
-            this.apiUrl = configuration["ApiUrl"];
+            this.clientId = configuration["ClientId"]!;
+            this.clientSecret = configuration["ClientSecret"]!;
+            this.authority = configuration["Authority"]!;
+            this.resource = configuration["Resource"]!;
+            this.apiUrl = configuration["ApiUrl"]!;
         }
         public async Task<List<GetCasesPerAccountModel>> GetAccountCases()
         {

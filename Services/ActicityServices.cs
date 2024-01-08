@@ -20,11 +20,11 @@ namespace WebApiDataverseConnection.Services
                 .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                 .AddJsonFile("appSettings.json")
                 .Build();
-            this.clientId = configuration["ClientId"];
-            this.clientSecret = configuration["ClientSecret"];
-            this.authority = configuration["Authority"];
-            this.resource = configuration["Resource"];
-            this.apiUrl = configuration["ApiUrl"];
+            this.clientId = configuration["ClientId"]!;
+            this.clientSecret = configuration["ClientSecret"]!;
+            this.authority = configuration["Authority"]!;
+            this.resource = configuration["Resource"]!;
+            this.apiUrl = configuration["ApiUrl"]!;
         }
         public async Task<List<GetActivitiesModel>> GetActivitesCases(string incidentid)
         {
@@ -61,12 +61,12 @@ namespace WebApiDataverseConnection.Services
                                     string username = usersList["value"][0].domainname;
                                     GetActivitiesModel activities = new ()
                                     {
-                                        activityid = e["activityid"]?.ToString(),
-                                        statecode = e["statecode"]?.ToString(),
-                                        description = ConvertHtmlToPlainText(e["description"]?.ToString()),
-                                        subject = e["subject"]?.ToString(),
-                                        activitytypecode = e["activitytypecode"],
-                                        actualend = e["actualend"]?.ToString(),
+                                        activityid = e["activityid"]?.ToString()!,
+                                        statecode = e["statecode"]?.ToString()!,
+                                        description = ConvertHtmlToPlainText(e["description"]?.ToString())!,
+                                        subject = e["subject"]?.ToString()!,
+                                        activitytypecode = e["activitytypecode"]!,
+                                        actualend = e["actualend"]?.ToString()!,
                                         username = username,
                                     };
 
